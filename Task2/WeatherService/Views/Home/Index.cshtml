@@ -1,0 +1,107 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="text-center">
+    <canvas id="temperatureChart"></canvas>
+    <canvas id="windChart"></canvas>
+</div>
+
+<script>
+    var labels;
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetLastUpdated",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (chData) {
+            labels = chData.last_updated;
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetTemperature",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (chData) {
+            var aData = chData;
+            var datasets = [];
+            aData.forEach(aDataset => {
+                var aLabel = aDataset.name;
+                var aDatasets1 = aDataset.data;
+                var dataset = {
+                    label: aLabel,
+                    data: aDatasets1,
+                }
+                datasets.push(dataset);
+            });
+
+            var dataT = {
+                labels: labels,
+                datasets: datasets
+            };
+            var ctx = $("#temperatureChart");
+            var myNewChart = new Chart(ctx, {
+                type: 'line',
+                data: dataT,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperatures'
+                        }
+                    }
+                }
+            });
+        }
+    });
+
+    $.ajax({
+        type: "GET",
+        url: "/Home/GetWind",
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (chData) {
+            var aData = chData;
+            var datasets = [];
+            aData.forEach(aDataset => {
+                var aLabel = aDataset.name;
+                var aDatasets1 = aDataset.data;
+                var dataset = {
+                    label: aLabel,
+                    data: aDatasets1,
+                }
+                datasets.push(dataset);
+            });
+
+            var dataT = {
+                labels: labels,
+                datasets: datasets
+            };
+            var ctx = $("#windChart");
+            var myNewChart = new Chart(ctx, {
+                type: 'line',
+                data: dataT,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Wind'
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
